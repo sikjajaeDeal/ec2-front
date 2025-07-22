@@ -7,7 +7,8 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    allowedHosts: ['beanba.store'],
+    port: 8081,
   },
   plugins: [
     react(),

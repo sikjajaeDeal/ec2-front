@@ -39,7 +39,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch('http://localhost:8080/api/chatting/openChattingRoom', {
+    const response = await fetch('http://beanba.store/api/chatting/openChattingRoom', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch('http://localhost:8080/api/chatting/getAllChattingRoomList', {
+    const response = await fetch('http://beanba.store/api/chatting/getAllChattingRoomList', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -80,7 +80,7 @@ export const chatService = {
   createStompClient(memberPk: number): Promise<Client> {
     return new Promise((resolve, reject) => {
       const client = new Client({
-        brokerURL: `ws://localhost:8080/api/ws-chat?memberPk=${memberPk}`,
+        brokerURL: `ws://beanba.store/api/ws-chat?memberPk=${memberPk}`,
         connectHeaders: {},
         debug: (str) => {
           console.log('STOMP Debug:', str);
@@ -147,7 +147,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`http://localhost:8080/api/chatting/getMessageList?roomPk=${roomPk}`, {
+    const response = await fetch(`http://beanba.store/api/chatting/getMessageList?roomPk=${roomPk}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -169,7 +169,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`http://localhost:8080/messageRead/${roomPk}`, {
+    const response = await fetch(`http://beanba.store/messageRead/${roomPk}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
