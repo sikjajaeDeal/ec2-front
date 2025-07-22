@@ -27,7 +27,7 @@ interface SocialLoginResponse {
 
 export const authService = {
   async login(loginData: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch('http://localhost:8080/api/auth/login', {
+    const response = await fetch('http://beanba.store/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const authService = {
     
     if (accessToken) {
       try {
-        const response = await fetch('http://localhost:8080/api/auth/logout', {
+        const response = await fetch('http://beanba.store/api/auth/logout', {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -93,7 +93,7 @@ export const authService = {
   },
 
   async sendEmailVerification(email: string): Promise<void> {
-    const response = await fetch(`http://localhost:8080/api/auth/signup/email?email=${encodeURIComponent(email)}`, {
+    const response = await fetch(`http://beanba.store/api/auth/signup/email?email=${encodeURIComponent(email)}`, {
       method: 'POST',
     });
 
@@ -131,7 +131,7 @@ export const authService = {
   },
 
   async getMemberInfoFromServer(): Promise<MemberResponse> {
-    const response = await fetch('http://localhost:8080/api/member/me', {
+    const response = await fetch('http://beanba.store/api/member/me', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${this.getAccessToken()}`,
@@ -156,7 +156,7 @@ export const authService = {
   },
 
   async findId(email: string): Promise<void> {
-    const response = await fetch(`http://localhost:8080/api/member/findId?email=${email}`, {
+    const response = await fetch(`http://beanba.store/api/member/findId?email=${email}`, {
       method: 'POST',
     });
 
@@ -172,7 +172,7 @@ export const authService = {
   },
 
   async findPassword(memberId: string, email: string): Promise<void> {
-    const response = await fetch(`http://localhost:8080/api/member/findPassword?memberId=${memberId}&email=${email}`, {
+    const response = await fetch(`http://beanba.store/api/member/findPassword?memberId=${memberId}&email=${email}`, {
       method: 'POST',
     });
 

@@ -168,7 +168,7 @@ const ProfileSettings = () => {
       }
 
       // TODO: 백엔드 API 연동 - 개인정보 수정 API 호출
-      const response = await fetch('http://localhost:8080/api/member/me', {
+      const response = await fetch('http://beanba.store/api/member/me', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
