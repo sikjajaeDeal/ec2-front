@@ -29,7 +29,7 @@ export interface LikedProductsResponse {
 }
 
 class LikeService {
-  private baseURL = 'http://beanba.store/api/like';
+  private baseURL = 'http://localhost:8080/api/like';
 
   async likeProduct(postPk: number): Promise<void> {
     const token = authService.getAccessToken();
@@ -56,7 +56,7 @@ class LikeService {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`http://beanba.store/api/like/${postPk}`, {
+    const response = await fetch(`http://localhost:8080/api/like/${postPk}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

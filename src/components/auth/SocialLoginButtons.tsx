@@ -10,9 +10,9 @@ interface SocialLoginButtonsProps {
 const SocialLoginButtons = ({ isLogin, onSocialLogin }: SocialLoginButtonsProps) => {
   const handleSocialLogin = (provider: string) => {
     if (provider === 'kakao') {
-      window.location.href = 'http://beanba.store/oauth2/authorization/kakao';
+      window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
     } else if (provider === 'google') {
-      window.location.href = 'http://beanba.store/oauth2/authorization/google';
+      window.location.href = 'http://localhost:8080/oauth2/authorization/google';
     } else {
       onSocialLogin(provider);
     }

@@ -3,7 +3,7 @@ import { Search, Menu, User, Heart, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import AuthModal from './AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,6 +24,7 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [priceError, setPriceError] = useState('');
+  const navigate = useNavigate();
 
   // 임시 검색 결과 데이터 (나중에 백엔드 API로 교체)
   const mockSearchResults: SearchResult[] = [
@@ -49,7 +50,6 @@ const Header = () => {
   const handleMinPriceChange = (value: string) => {
     setMinPrice(value);
     setPriceError('');
-    // TODO: Backend integration - send min price value to API
     console.log('Min price changed:', value);
   };
 
@@ -61,15 +61,23 @@ const Header = () => {
     }
     setMaxPrice(value);
     setPriceError('');
-    // TODO: Backend integration - send max price value to API
     console.log('Max price changed:', value);
   };
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
     setShowSearchResults(value.length > 0);
-    // TODO: Backend integration - call search API with debouncing
     console.log('Search query:', value);
+  };
+
+  const handleSearchSubmit = () => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('keyword', searchQuery);
+    if (minPrice) params.set('minPrice', minPrice);
+    if (maxPrice) params.set('maxPrice', maxPrice);
+    
+    navigate(`/search?${params.toString()}`);
+    setShowSearchResults(false);
   };
 
   const handleLoginClick = () => {
@@ -124,7 +132,6 @@ const Header = () => {
                       variant="ghost" 
                       size="sm"
                       onClick={() => {
-                        // 페이지가 이미 /liked-products인 경우 새로고침
                         if (window.location.pathname === '/liked-products') {
                           window.location.reload();
                         }
@@ -208,6 +215,7 @@ const Header = () => {
                     placeholder="어떤 식재료를 찾고 계신가요?"
                     value={searchQuery}
                     onChange={(e) => handleSearchChange(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
                     className="pl-14 pr-4 py-6 w-full border-green-200 focus:border-green-400 text-xl placeholder:text-gray-400 rounded-xl"
                   />
                   <Search className="absolute left-4 top-6 h-6 w-6 text-gray-400" />
@@ -253,14 +261,7 @@ const Header = () => {
                 {/* Search Button */}
                 <Button 
                   className="w-full py-6 text-lg font-semibold bg-green-600 hover:bg-green-700"
-                  onClick={() => {
-                    // TODO: Backend integration - perform search with filters
-                    console.log('Search initiated:', { 
-                      query: searchQuery, 
-                      minPrice: minPrice ? parseInt(minPrice.replace(/,/g, '')) : 0,
-                      maxPrice: maxPrice ? parseInt(maxPrice.replace(/,/g, '')) : 100000000
-                    });
-                  }}
+                  onClick={handleSearchSubmit}
                 >
                   <Search className="h-5 w-5 mr-2" />
                   식재료 검색

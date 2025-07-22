@@ -1,3 +1,4 @@
+
 interface LoginRequest {
   memberId: string;
   password: string;
@@ -26,8 +27,7 @@ interface SocialLoginResponse {
 
 export const authService = {
   async login(loginData: LoginRequest): Promise<LoginResponse> {
-    // TODO: 백엔드 API 연동 - 로그인 API 호출
-    const response = await fetch('http://beanba.store/api/auth/login', {
+    const response = await fetch('http://localhost:8080/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,7 +53,20 @@ export const authService = {
       throw new Error('소셜 로그인 처리에 실패했습니다.');
     }
 
-    return response.json();
+    // 응답이 JSON인지 텍스트인지 확인
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json();
+    } else {
+      // 텍스트 응답인 경우 JSON으로 파싱
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch (error) {
+        console.error('JSON 파싱 오류:', error);
+        throw new Error('서버 응답 파싱에 실패했습니다.');
+      }
+    }
   },
 
   async logout(): Promise<void> {
@@ -61,8 +74,7 @@ export const authService = {
     
     if (accessToken) {
       try {
-        // TODO: 백엔드 API 연동 - 로그아웃 API 호출
-        const response = await fetch('http://beanba.store/api/auth/logout', {
+        const response = await fetch('http://localhost:8080/api/auth/logout', {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -77,18 +89,15 @@ export const authService = {
       }
     }
 
-    // TODO: 로컬 스토리지에서 토큰과 사용자 정보 제거 (매우 중요!)
     this.clearStorage();
   },
 
   async sendEmailVerification(email: string): Promise<void> {
-    // TODO: 백엔드 API 연동 - 이메일 인증 전송 API 호출 (request param으로 변경)
-    const response = await fetch(`http://beanba.store/api/auth/signup/email?email=${encodeURIComponent(email)}`, {
+    const response = await fetch(`http://localhost:8080/api/auth/signup/email?email=${encodeURIComponent(email)}`, {
       method: 'POST',
     });
 
     if (response.status === 409) {
-      // 이미 가입된 이메일
       throw new Error('이미 가입된 이메일입니다.');
     }
 
@@ -96,7 +105,6 @@ export const authService = {
       throw new Error('이메일 전송에 실패했습니다.');
     }
 
-    // 성공 응답 처리 (raw body: "이메일 인증 메일을 전송했습니다.")
     return;
   },
 
@@ -123,8 +131,7 @@ export const authService = {
   },
 
   async getMemberInfoFromServer(): Promise<MemberResponse> {
-    // TODO: 백엔드 API 연동 - 회원 정보 조회 API 호출
-    const response = await fetch('http://beanba.store/api/member/me', {
+    const response = await fetch('http://localhost:8080/api/member/me', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${this.getAccessToken()}`,
@@ -139,7 +146,6 @@ export const authService = {
   },
 
   clearStorage() {
-    // TODO: 로컬스토리지에서 모든 인증 관련 데이터 삭제
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('memberInfo');
@@ -150,7 +156,7 @@ export const authService = {
   },
 
   async findId(email: string): Promise<void> {
-    const response = await fetch(`http://beanba.store/api/member/findId?email=${email}`, {
+    const response = await fetch(`http://localhost:8080/api/member/findId?email=${email}`, {
       method: 'POST',
     });
 
@@ -162,12 +168,11 @@ export const authService = {
       throw new Error('아이디 찾기에 실패했습니다.');
     }
 
-    // Success response is raw text: "가입시 이메일로 아이디 발송."
     return;
   },
 
   async findPassword(memberId: string, email: string): Promise<void> {
-    const response = await fetch(`http://beanba.store/api/member/findPassword?memberId=${memberId}&email=${email}`, {
+    const response = await fetch(`http://localhost:8080/api/member/findPassword?memberId=${memberId}&email=${email}`, {
       method: 'POST',
     });
 
@@ -179,7 +184,6 @@ export const authService = {
       throw new Error('비밀번호 찾기에 실패했습니다.');
     }
 
-    // Success response is raw text: "가입시 이메일로 아이디 발송."
     return;
   }
 };

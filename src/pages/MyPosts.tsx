@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Trash2 } from 'lucide-react';
+import { ArrowLeft, Trash2, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -14,14 +13,29 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { salePostService, SalePost, MyPostsResponse, getStateText, getStateColor } from '@/services/salePostService';
+import { chatService } from '@/services/chatService';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import PostChatRoomList from '@/components/chat/PostChatRoomList';
+import ProductChatWindow from '@/components/chat/ProductChatWindow';
+import { Client } from '@stomp/stompjs';
 
 const MyPosts = () => {
   const [postsData, setPostsData] = useState<MyPostsResponse | null>(null);
-  const [currentPage, setCurrentPage] = useState(0); // 0 기반 인덱스로 변경
+  const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState<Set<number>>(new Set());
+  
+  // 채팅 관련 상태
+  const [showChatRoomList, setShowChatRoomList] = useState(false);
+  const [showChatWindow, setShowChatWindow] = useState(false);
+  const [selectedPostPk, setSelectedPostPk] = useState<number | null>(null);
+  const [selectedRoomPk, setSelectedRoomPk] = useState<number | null>(null);
+  const [selectedChatWith, setSelectedChatWith] = useState<number | null>(null);
+  const [selectedMemberPk, setSelectedMemberPk] = useState<number | null>(null);
+  const [selectedNickname, setSelectedNickname] = useState<string>('');
+  const [stompClient, setStompClient] = useState<Client | null>(null);
+  
   const { toast } = useToast();
   const { memberInfo } = useAuth();
 
@@ -61,7 +75,6 @@ const MyPosts = () => {
         title: "성공",
         description: "게시글이 삭제되었습니다.",
       });
-      // 목록 새로고침
       fetchMyPosts(currentPage);
     } catch (error) {
       toast({
@@ -83,7 +96,6 @@ const MyPosts = () => {
         title: "성공",
         description: `상태가 "${getStateText(newStatus)}"로 변경되었습니다.`,
       });
-      // 목록 새로고침
       fetchMyPosts(currentPage);
     } catch (error) {
       toast({
@@ -97,6 +109,52 @@ const MyPosts = () => {
         newSet.delete(postPk);
         return newSet;
       });
+    }
+  };
+
+  const handleChatButtonClick = (postPk: number) => {
+    setSelectedPostPk(postPk);
+    setShowChatRoomList(true);
+  };
+
+  const handleSelectChatRoom = async (roomPk: number, chatWith: number, postPk: number, memberPk: number, chatWithNickname: string) => {
+    try {
+      setSelectedRoomPk(roomPk);
+      setSelectedChatWith(chatWith);
+      setSelectedPostPk(postPk);
+      setSelectedMemberPk(memberPk);
+      setSelectedNickname(chatWithNickname);
+      
+      // STOMP 클라이언트 생성 및 연결
+      const client = await chatService.createStompClient(memberPk);
+      setStompClient(client);
+      
+      setShowChatRoomList(false);
+      setShowChatWindow(true);
+    } catch (error) {
+      toast({
+        title: '채팅방 연결 실패',
+        description: '다시 시도해주세요.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleCloseChatRoomList = () => {
+    setShowChatRoomList(false);
+    setSelectedPostPk(null);
+  };
+
+  const handleCloseChatWindow = () => {
+    setShowChatWindow(false);
+    setSelectedRoomPk(null);
+    setSelectedChatWith(null);
+    setSelectedPostPk(null);
+    setSelectedMemberPk(null);
+    setSelectedNickname('');
+    if (stompClient) {
+      stompClient.deactivate();
+      setStompClient(null);
     }
   };
 
@@ -116,7 +174,7 @@ const MyPosts = () => {
     if (!postsData || postsData.totalPage <= 1) return null;
 
     const pages = [];
-    for (let i = 0; i < postsData.totalPage; i++) { // 0부터 시작
+    for (let i = 0; i < postsData.totalPage; i++) {
       pages.push(i);
     }
 
@@ -145,7 +203,7 @@ const MyPosts = () => {
                   handlePageChange(page);
                 }}
               >
-                {page + 1} {/* 화면에는 1부터 표시 */}
+                {page + 1}
               </PaginationLink>
             </PaginationItem>
           ))}
@@ -238,7 +296,6 @@ const MyPosts = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            // TODO: 수정 기능 구현 예정
                             toast({
                               title: "알림",
                               description: "수정 기능은 곧 구현될 예정입니다.",
@@ -291,6 +348,18 @@ const MyPosts = () => {
                       )}
                     </div>
 
+                    {/* 채팅하기 버튼 */}
+                    <div className="mb-3">
+                      <Button
+                        onClick={() => handleChatButtonClick(post.postPk)}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                        size="sm"
+                      >
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        채팅하기
+                      </Button>
+                    </div>
+
                     <Link to={`/product/${post.postPk}`}>
                       <div className="space-y-2">
                         <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
@@ -321,11 +390,35 @@ const MyPosts = () => {
               ))}
             </div>
             
-            {/* 페이지네이션 */}
             {renderPagination()}
           </>
         )}
       </div>
+
+      {/* 채팅방 목록 모달 */}
+      {selectedPostPk && (
+        <PostChatRoomList
+          isOpen={showChatRoomList}
+          onClose={handleCloseChatRoomList}
+          postPk={selectedPostPk}
+          onSelectChatRoom={handleSelectChatRoom}
+        />
+      )}
+
+      {/* 채팅창 */}
+      {showChatWindow && selectedRoomPk && selectedChatWith && selectedPostPk && selectedMemberPk && (
+        <ProductChatWindow
+          isOpen={showChatWindow}
+          onClose={handleCloseChatWindow}
+          roomPk={selectedRoomPk}
+          memberPk={selectedMemberPk}
+          chatWith={selectedChatWith}
+          postPk={selectedPostPk}
+          productTitle=""
+          sellerName={selectedNickname}
+          stompClient={stompClient}
+        />
+      )}
     </div>
   );
 };

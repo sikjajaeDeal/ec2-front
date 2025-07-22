@@ -51,7 +51,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (memberId: string, password: string) => {
     try {
-      // TODO: 백엔드 API 연동 - 로그인 처리
       const response = await authService.login({ memberId, password });
       
       authService.saveTokens(response.accessToken, response.refreshToken);
@@ -66,12 +65,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      // TODO: 백엔드 API 연동 - 로그아웃 처리
       await authService.logout();
     } catch (error) {
       console.error('로그아웃 중 오류:', error);
     } finally {
-      // TODO: 로그아웃 후 상태 초기화 (매우 중요!)
       setIsLoggedIn(false);
       setMemberInfo(null);
     }
@@ -79,13 +76,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const updateMemberInfo = async () => {
     try {
-      // TODO: 백엔드 API 연동 - 최신 회원 정보 조회
+      // 로컬 스토리지에서 현재 저장된 정보를 먼저 확인
+      const storedMemberInfo = authService.getMemberInfo();
+      const storedToken = authService.getAccessToken();
+      
+      if (storedMemberInfo && storedToken) {
+        setIsLoggedIn(true);
+        setMemberInfo(storedMemberInfo);
+        return;
+      }
+      
+      // 서버에서 최신 정보를 가져오는 경우
       const updatedMemberInfo = await authService.getMemberInfoFromServer();
       authService.saveMemberInfo(updatedMemberInfo);
       setMemberInfo(updatedMemberInfo);
+      setIsLoggedIn(true);
     } catch (error) {
       console.error('회원 정보 업데이트 오류:', error);
-      throw error;
+      // 오류 발생시 로컬 스토리지 정보라도 확인
+      const storedMemberInfo = authService.getMemberInfo();
+      const storedToken = authService.getAccessToken();
+      
+      if (storedMemberInfo && storedToken) {
+        setIsLoggedIn(true);
+        setMemberInfo(storedMemberInfo);
+      }
     }
   };
 

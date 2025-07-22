@@ -14,23 +14,31 @@ const SocialCallback = () => {
   useEffect(() => {
     const handleSocialLogin = async () => {
       try {
-        const code = searchParams.get('code');
-        const state = searchParams.get('state');
+        console.log('소셜 로그인 처리 시작');
         
-        if (!code) {
-          throw new Error('인증 코드가 없습니다.');
+        // URL 파라미터에서 accessToken 추출
+        const accessToken = searchParams.get('accessToken');
+        console.log('받은 accessToken:', accessToken);
+        
+        if (!accessToken) {
+          throw new Error('액세스 토큰이 없습니다.');
         }
-
-        // 현재 URL의 전체 경로를 서버로 전달하여 토큰 교환
-        const currentUrl = window.location.href;
-        const response = await authService.processSocialLogin(currentUrl);
         
-        // 로그인 정보 저장
-        authService.saveTokens(response.accessToken, ''); // refresh token은 쿠키로 관리
-        authService.saveMemberInfo(response.memberResponse);
+        // accessToken을 로컬스토리지에 저장
+        authService.saveTokens(accessToken, '');
+        console.log('accessToken 저장 완료');
+        
+        // 회원 정보 조회
+        const memberInfo = await authService.getMemberInfoFromServer();
+        console.log('회원 정보 조회 완료:', memberInfo);
+        
+        // 회원 정보를 로컬스토리지에 저장
+        authService.saveMemberInfo(memberInfo);
+        console.log('회원 정보 저장 완료');
         
         // AuthContext 업데이트
         await updateMemberInfo();
+        console.log('AuthContext 업데이트 완료, 메인 페이지로 이동');
         
         // 메인 페이지로 리다이렉트
         navigate('/', { replace: true });

@@ -34,7 +34,7 @@ const SignupVerify = () => {
 
   const verifyEmail = async () => {
     try {
-      const url = new URL('http://beanba.store/api/auth/signup/verify');
+      const url = new URL('http://localhost:8080/api/auth/signup/verify');
       url.searchParams.append('email', email || '');
       
       const response = await fetch(url.toString(), {
