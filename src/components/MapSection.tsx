@@ -69,7 +69,7 @@ const MapSection = () => {
 
       console.log('API 요청 시작:', searchRequest);
       
-      const response = await fetch('http://beanba.store/api/sale-post/elasticsearch', {
+      const response = await fetch('https://beanba.store/api/sale-post/elasticsearch', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

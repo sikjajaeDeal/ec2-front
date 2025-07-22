@@ -58,7 +58,7 @@ export interface LocationSearchRequest {
   size: number;
 }
 
-const API_BASE_URL = 'http://beanba.store/api';
+const API_BASE_URL = 'https://beanba.store/api';
 
 // 상태 변환 함수들
 export const getStateText = (state: string) => {

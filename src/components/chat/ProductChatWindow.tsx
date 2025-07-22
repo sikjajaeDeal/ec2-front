@@ -125,7 +125,7 @@ const ProductChatWindow = ({
         throw new Error('로그인이 필요합니다.');
       }
 
-      const response = await fetch(`http://beanba.store/api/chatting/getMessageList?roomPk=${roomPk}`, {
+      const response = await fetch(`https://beanba.store/api/chatting/getMessageList?roomPk=${roomPk}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -150,7 +150,7 @@ const ProductChatWindow = ({
       const accessToken = localStorage.getItem('accessToken');
       if (!accessToken) return;
 
-      const response = await fetch(`http://beanba.store/messageRead/${roomPk}`, {
+      const response = await fetch(`https://beanba.store/messageRead/${roomPk}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${accessToken}`,

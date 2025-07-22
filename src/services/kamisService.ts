@@ -9,7 +9,7 @@ interface KamisPriceData {
 
 export const kamisService = {
   getAllPrices: async (): Promise<KamisPriceData[]> => {
-    const response = await fetch('http://beanba.store/api/kamis/all');
+    const response = await fetch('https://beanba.store/api/kamis/all');
     if (!response.ok) {
       throw new Error('Failed to fetch kamis price data');
     }
