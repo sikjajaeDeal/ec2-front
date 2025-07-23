@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,8 +18,41 @@ const ChatButton = () => {
   const [selectedPostPk, setSelectedPostPk] = useState<number | null>(null);
   const [selectedMemberPk, setSelectedMemberPk] = useState<number | null>(null);
   const [stompClient, setStompClient] = useState<Client | null>(null);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
   const { isLoggedIn, memberInfo } = useAuth();
   const { toast } = useToast();
+
+  // 읽지 않은 메시지 확인
+  useEffect(() => {
+    const checkUnreadMessages = async () => {
+      if (!isLoggedIn) {
+        setHasUnreadMessages(false);
+        return;
+      }
+
+      try {
+        const response = await chatService.checkUnreadMessages();
+        setHasUnreadMessages(response.readYn === 'N');
+      } catch (error) {
+        console.error('읽지 않은 메시지 확인 오류:', error);
+        setHasUnreadMessages(false);
+      }
+    };
+
+    checkUnreadMessages();
+    
+    // 로그인 상태일 때만 주기적으로 확인 (30초마다)
+    let interval: NodeJS.Timeout;
+    if (isLoggedIn) {
+      interval = setInterval(checkUnreadMessages, 30000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isLoggedIn]);
 
   const handleChatButtonClick = () => {
     if (!isLoggedIn) {
@@ -31,6 +64,8 @@ const ChatButton = () => {
       return;
     }
     setShowChatList(true);
+    // 채팅 리스트를 열 때 읽지 않은 메시지 상태 업데이트
+    setHasUnreadMessages(false);
   };
 
   const handleSelectChat = async (roomPk: number, chatWith: number, nickname: string, postPk: number, memberPk: number) => {
@@ -87,6 +122,13 @@ const ChatButton = () => {
 
   return (
     <>
+      {/* Unread Message Notification */}
+      {hasUnreadMessages && (
+        <div className="fixed bottom-6 right-24 bg-red-500 text-white px-3 py-2 rounded-lg shadow-lg text-sm z-30 whitespace-nowrap">
+          안 읽은 메시지가 있습니다.
+        </div>
+      )}
+
       {/* Chat Button */}
       <Button
         onClick={handleChatButtonClick}

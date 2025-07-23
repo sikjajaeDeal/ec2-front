@@ -34,6 +34,11 @@ interface ChattingRoomListItem {
   memberPk: number;
 }
 
+interface UnreadMessageResponse {
+  unreadCnt: number;
+  readYn: string;
+}
+
 export const chatService = {
   async openChattingRoom(postPk: number): Promise<OpenChattingRoomResponse> {
     const accessToken = authService.getAccessToken();
@@ -100,6 +105,27 @@ export const chatService = {
 
     const data = await response.json();
     return data || [];
+  },
+
+  async checkUnreadMessages(): Promise<UnreadMessageResponse> {
+    const accessToken = authService.getAccessToken();
+    
+    if (!accessToken) {
+      throw new Error('로그인이 필요합니다.');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/chatting/checkReadYn`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('읽지 않은 메시지 확인에 실패했습니다.');
+    }
+
+    return response.json();
   },
 
   createStompClient(memberPk: number): Promise<Client> {
