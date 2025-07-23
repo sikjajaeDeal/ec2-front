@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
+// 환경변수에서 API URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://beanba.store';
 
 const SignupVerify = () => {
   const [searchParams] = useSearchParams();
@@ -34,7 +38,7 @@ const SignupVerify = () => {
 
   const verifyEmail = async () => {
     try {
-      const url = new URL('https://beanba.store/api/auth/signup/verify');
+      const url = new URL(`${API_BASE_URL}/api/auth/signup/verify`);
       url.searchParams.append('email', email || '');
       
       const response = await fetch(url.toString(), {

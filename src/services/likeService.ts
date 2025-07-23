@@ -1,3 +1,4 @@
+
 import { authService } from './authService';
 
 // 환경변수에서 API URL 가져오기
@@ -58,7 +59,7 @@ class LikeService {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/like/${postPk}`, {
+    const response = await fetch(`${this.baseURL}/${postPk}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

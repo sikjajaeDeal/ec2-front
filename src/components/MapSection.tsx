@@ -1,9 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 import KakaoMap from './KakaoMap';
 import { salePostService, SalePost } from '@/services/salePostService';
 import { authService } from '@/services/authService';
+
+// 환경변수에서 API URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://beanba.store';
 
 const MapSection = () => {
   const [currentAddress, setCurrentAddress] = useState<string | null>(null);
@@ -69,7 +71,7 @@ const MapSection = () => {
 
       console.log('API 요청 시작:', searchRequest);
       
-      const response = await fetch('https://beanba.store/api/sale-post/elasticsearch', {
+      const response = await fetch(`${API_BASE_URL}/api/sale-post/elasticsearch`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

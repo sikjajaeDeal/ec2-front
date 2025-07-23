@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,9 @@ import { Input } from '@/components/ui/input';
 import { chatService } from '@/services/chatService';
 import { useAuth } from '@/contexts/AuthContext';
 import { Client } from '@stomp/stompjs';
+
+// 환경변수에서 API URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://beanba.store';
 
 interface ChatMessage {
   id: string;
@@ -125,7 +127,7 @@ const ProductChatWindow = ({
         throw new Error('로그인이 필요합니다.');
       }
 
-      const response = await fetch(`https://beanba.store/api/chatting/getMessageList?roomPk=${roomPk}`, {
+      const response = await fetch(`${API_BASE_URL}/api/chatting/getMessageList?roomPk=${roomPk}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -150,7 +152,7 @@ const ProductChatWindow = ({
       const accessToken = localStorage.getItem('accessToken');
       if (!accessToken) return;
 
-      const response = await fetch(`https://beanba.store/messageRead/${roomPk}`, {
+      const response = await fetch(`${API_BASE_URL}/messageRead/${roomPk}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${accessToken}`,

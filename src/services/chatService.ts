@@ -3,7 +3,7 @@ import { Client } from '@stomp/stompjs';
 
 // 환경변수에서 URL 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://beanba.store';
-const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:8080';
+const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL || 'wss://beanba.store';
 
 interface OpenChattingRoomRequest {
   postPk: number;
