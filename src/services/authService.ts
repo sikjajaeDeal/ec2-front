@@ -1,4 +1,3 @@
-
 interface LoginRequest {
   memberId: string;
   password: string;
@@ -22,6 +21,7 @@ interface LoginResponse {
 
 interface SocialLoginResponse {
   accessToken: string;
+  refreshToken?: string;
   memberResponse: MemberResponse;
 }
 
@@ -93,6 +93,7 @@ export const authService = {
       }
     }
 
+    // access token과 refresh token 모두 삭제
     this.clearStorage();
   },
 
@@ -114,7 +115,9 @@ export const authService = {
 
   saveTokens(accessToken: string, refreshToken: string) {
     localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken);
+    }
   },
 
   saveMemberInfo(memberInfo: MemberResponse) {

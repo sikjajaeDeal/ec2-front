@@ -27,7 +27,7 @@ const SocialCallback = () => {
           throw new Error('액세스 토큰이 없습니다.');
         }
         
-        // accessToken을 로컬스토리지에 저장
+        // accessToken을 로컬스토리지에 저장 (소셜로그인에서는 refreshToken이 없을 수 있음)
         authService.saveTokens(accessToken, '');
         console.log('accessToken 저장 완료');
         
