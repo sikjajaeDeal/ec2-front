@@ -1,5 +1,7 @@
-
 import { authService } from './authService';
+
+// 환경변수에서 API URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 export interface SalePostCreateRequest {
   categoryPk: number;
@@ -11,7 +13,7 @@ export interface SalePostCreateRequest {
 export interface SalePost {
   postPk: number;
   sellerNickname: string;
-  sellerPk: number; // Add missing sellerPk property
+  sellerPk: number;
   categoryName: string;
   title: string;
   content: string;
@@ -23,8 +25,8 @@ export interface SalePost {
   state: string;
   latitude: number;
   longitude: number;
-  thumbnailUrl?: string; // 전체 목록에서만 사용
-  imageUrls?: string[]; // 단건 조회에서만 사용
+  thumbnailUrl?: string;
+  imageUrls?: string[];
   salePostLiked: boolean;
 }
 
@@ -58,8 +60,6 @@ export interface LocationSearchRequest {
   size: number;
 }
 
-const API_BASE_URL = 'https://beanba.store/api';
-
 // 상태 변환 함수들
 export const getStateText = (state: string) => {
   switch (state) {
@@ -84,7 +84,7 @@ export const getStateColor = (state: string) => {
 export const salePostService = {
   // 인기상품 조회 (좋아요 많은 순)
   getTopViewPosts: async (): Promise<SalePost[]> => {
-    const response = await fetch(`${API_BASE_URL}/sale-post/top-view`, {
+    const response = await fetch(`${API_BASE_URL}/api/sale-post/top-view`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ export const salePostService = {
       formData.append('salePostImages', image);
     });
 
-    const response = await fetch(`${API_BASE_URL}/sale-post`, {
+    const response = await fetch(`${API_BASE_URL}/api/sale-post`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -136,7 +136,7 @@ export const salePostService = {
 
   // 상품 목록 조회 (페이징 처리 추가) - 0기반 인덱스
   getSalePosts: async (page: number = 0): Promise<SalePostsResponse> => {
-    const response = await fetch(`${API_BASE_URL}/sale-post/all?page=${page}`, {
+    const response = await fetch(`${API_BASE_URL}/api/sale-post/all?page=${page}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ export const salePostService = {
 
   // 상품 상세 정보 조회 (토큰 불필요)
   getSalePostDetail: async (postPk: number): Promise<SalePost> => {
-    const response = await fetch(`${API_BASE_URL}/sale-post/detail/${postPk}`, {
+    const response = await fetch(`${API_BASE_URL}/api/sale-post/detail/${postPk}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -176,7 +176,7 @@ export const salePostService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`${API_BASE_URL}/mypage/sales?page=${page}`, {
+    const response = await fetch(`${API_BASE_URL}/api/mypage/sales?page=${page}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -200,7 +200,7 @@ export const salePostService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`${API_BASE_URL}/sale-post/${postPk}`, {
+    const response = await fetch(`${API_BASE_URL}/api/sale-post/${postPk}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -230,7 +230,7 @@ export const salePostService = {
       params.append('buyerPk', buyerPk.toString());
     }
 
-    const response = await fetch(`${API_BASE_URL}/sale-post/${postPk}/status?${params.toString()}`, {
+    const response = await fetch(`${API_BASE_URL}/api/sale-post/${postPk}/status?${params.toString()}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -246,7 +246,7 @@ export const salePostService = {
 
   // 위치 기반 상품 검색
   searchByLocation: async (searchRequest: LocationSearchRequest): Promise<SalePostsResponse> => {
-    const response = await fetch(`${API_BASE_URL}/sale-post/elasticsearch`, {
+    const response = await fetch(`${API_BASE_URL}/api/sale-post/elasticsearch`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

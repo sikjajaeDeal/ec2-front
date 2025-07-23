@@ -1,6 +1,9 @@
-
 import { authService } from './authService';
 import { Client } from '@stomp/stompjs';
+
+// 환경변수에서 URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:8080';
 
 interface OpenChattingRoomRequest {
   postPk: number;
@@ -39,7 +42,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch('https://beanba.store/api/chatting/openChattingRoom', {
+    const response = await fetch(`${API_BASE_URL}/api/chatting/openChattingRoom`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -62,7 +65,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch('https://beanba.store/api/chatting/getAllChattingRoomList', {
+    const response = await fetch(`${API_BASE_URL}/api/chatting/getAllChattingRoomList`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -84,7 +87,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`https://beanba.store/api/chatting/getChattingRoomListByPostPk?postPk=${postPk}`, {
+    const response = await fetch(`${API_BASE_URL}/api/chatting/getChattingRoomListByPostPk?postPk=${postPk}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -102,7 +105,7 @@ export const chatService = {
   createStompClient(memberPk: number): Promise<Client> {
     return new Promise((resolve, reject) => {
       const client = new Client({
-        brokerURL: `ws://beanba.store/api/ws-chat?memberPk=${memberPk}`,
+        brokerURL: `${WS_BASE_URL}/api/ws-chat?memberPk=${memberPk}`,
         connectHeaders: {},
         debug: (str) => {
           console.log('STOMP Debug:', str);
@@ -169,7 +172,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`https://beanba.store/api/chatting/getMessageList?roomPk=${roomPk}`, {
+    const response = await fetch(`${API_BASE_URL}/api/chatting/getMessageList?roomPk=${roomPk}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -191,7 +194,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`https://beanba.store/messageRead/${roomPk}`, {
+    const response = await fetch(`${API_BASE_URL}/messageRead/${roomPk}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${accessToken}`,

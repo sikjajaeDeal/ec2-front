@@ -1,4 +1,3 @@
-
 interface LoginRequest {
   memberId: string;
   password: string;
@@ -25,9 +24,13 @@ interface SocialLoginResponse {
   memberResponse: MemberResponse;
 }
 
+// 환경변수에서 URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const OAUTH2_BASE_URL = import.meta.env.VITE_OAUTH2_BASE_URL || 'http://localhost:8080';
+
 export const authService = {
   async login(loginData: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch('https://beanba.store/api/auth/login', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +77,7 @@ export const authService = {
     
     if (accessToken) {
       try {
-        const response = await fetch('https://beanba.store/api/auth/logout', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -93,7 +96,7 @@ export const authService = {
   },
 
   async sendEmailVerification(email: string): Promise<void> {
-    const response = await fetch(`https://beanba.store/api/auth/signup/email?email=${encodeURIComponent(email)}`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/signup/email?email=${encodeURIComponent(email)}`, {
       method: 'POST',
     });
 
@@ -131,7 +134,7 @@ export const authService = {
   },
 
   async getMemberInfoFromServer(): Promise<MemberResponse> {
-    const response = await fetch('https://beanba.store/api/member/me', {
+    const response = await fetch(`${API_BASE_URL}/api/member/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${this.getAccessToken()}`,
@@ -156,7 +159,7 @@ export const authService = {
   },
 
   async findId(email: string): Promise<void> {
-    const response = await fetch(`https://beanba.store/api/member/findId?email=${email}`, {
+    const response = await fetch(`${API_BASE_URL}/api/member/findId?email=${email}`, {
       method: 'POST',
     });
 
@@ -172,7 +175,7 @@ export const authService = {
   },
 
   async findPassword(memberId: string, email: string): Promise<void> {
-    const response = await fetch(`https://beanba.store/api/member/findPassword?memberId=${memberId}&email=${email}`, {
+    const response = await fetch(`${API_BASE_URL}/api/member/findPassword?memberId=${memberId}&email=${email}`, {
       method: 'POST',
     });
 
@@ -185,5 +188,14 @@ export const authService = {
     }
 
     return;
+  },
+
+  // OAuth2 URL 생성 함수들
+  getKakaoLoginUrl(): string {
+    return `${OAUTH2_BASE_URL}/oauth2/authorization/kakao`;
+  },
+
+  getGoogleLoginUrl(): string {
+    return `${OAUTH2_BASE_URL}/oauth2/authorization/google`;
   }
 };

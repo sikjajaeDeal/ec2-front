@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import SocialLoginButtons from './auth/SocialLoginButtons';
+import { SocialLoginButtons } from './auth/SocialLoginButtons';
 import LocationDisplay from './auth/LocationDisplay';
 import AuthForm from './auth/AuthForm';
 import EmailVerification from './auth/EmailVerification';
@@ -100,10 +99,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               <FindPasswordForm onBack={() => setCurrentStep('login')} />
             ) : (
               <>
-                <SocialLoginButtons 
-                  isLogin={currentStep === 'login'} 
-                  onSocialLogin={handleSocialLogin} 
-                />
+                <SocialLoginButtons />
 
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">

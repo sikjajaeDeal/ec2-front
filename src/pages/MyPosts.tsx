@@ -12,6 +12,17 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { salePostService, SalePost, MyPostsResponse, getStateText, getStateColor } from '@/services/salePostService';
 import { chatService } from '@/services/chatService';
 import { useToast } from '@/hooks/use-toast';
@@ -304,13 +315,30 @@ const MyPosts = () => {
                         >
                           수정
                         </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeletePost(post.postPk)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>게시글 삭제</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                정말로 삭제하시겠습니까? 삭제된 게시글은 복구할 수 없습니다.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>취소</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeletePost(post.postPk)}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                삭제
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
 
                       {/* 현재 상태 표시 */}
