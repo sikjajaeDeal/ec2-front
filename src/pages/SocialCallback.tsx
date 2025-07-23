@@ -4,6 +4,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '@/services/authService';
 import { useAuth } from '@/contexts/AuthContext';
 
+// 환경변수에서 API URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://beanba.store';
+
 const SocialCallback = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -29,7 +32,18 @@ const SocialCallback = () => {
         console.log('accessToken 저장 완료');
         
         // 회원 정보 조회
-        const memberInfo = await authService.getMemberInfoFromServer();
+        const response = await fetch(`${API_BASE_URL}/api/member/me`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('회원 정보 조회에 실패했습니다.');
+        }
+
+        const memberInfo = await response.json();
         console.log('회원 정보 조회 완료:', memberInfo);
         
         // 회원 정보를 로컬스토리지에 저장

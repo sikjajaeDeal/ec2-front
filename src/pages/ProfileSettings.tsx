@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Chrome, MapPin, Navigation } from 'lucide-react';
@@ -10,6 +9,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import KakaoMap from '@/components/KakaoMap';
+
+// 환경변수에서 API URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://beanba.store';
 
 const ProfileSettings = () => {
   const { memberInfo, updateMemberInfo } = useAuth();
@@ -167,8 +169,8 @@ const ProfileSettings = () => {
         return;
       }
 
-      // TODO: 백엔드 API 연동 - 개인정보 수정 API 호출
-      const response = await fetch('https://beanba.store/api/member/me', {
+      // 개인정보 수정 API 호출
+      const response = await fetch(`${API_BASE_URL}/api/member/me`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -178,7 +180,7 @@ const ProfileSettings = () => {
       });
 
       if (response.ok) {
-        // TODO: 백엔드 API 연동 - 개인정보 수정 후 최신 정보 조회
+        // 개인정보 수정 후 최신 정보 조회
         await updateMemberInfo();
         
         toast({
