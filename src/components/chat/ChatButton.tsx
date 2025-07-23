@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ const ChatButton = () => {
   const [selectedNickname, setSelectedNickname] = useState<string>('');
   const [selectedPostPk, setSelectedPostPk] = useState<number | null>(null);
   const [selectedMemberPk, setSelectedMemberPk] = useState<number | null>(null);
+  const [selectedTitle, setSelectedTitle] = useState<string>('');
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -85,17 +87,18 @@ const ChatButton = () => {
     setShowNotification(false);
   };
 
-  const handleSelectChat = async (roomPk: number, chatWith: number, nickname: string, postPk: number, memberPk: number) => {
+  const handleSelectChat = async (roomPk: number, chatWith: number, nickname: string, postPk: number, memberPk: number, title: string) => {
     if (!memberInfo) return;
 
     try {
-      console.log('채팅방 선택:', { roomPk, chatWith, nickname, postPk, memberPk });
+      console.log('채팅방 선택:', { roomPk, chatWith, nickname, postPk, memberPk, title });
       
       setSelectedRoomPk(roomPk);
       setSelectedChatWith(chatWith);
       setSelectedNickname(nickname);
       setSelectedPostPk(postPk);
       setSelectedMemberPk(memberPk);
+      setSelectedTitle(title);
       
       // STOMP 클라이언트 생성 및 연결
       const client = await chatService.createStompClient(memberPk);
@@ -131,6 +134,7 @@ const ChatButton = () => {
     setSelectedNickname('');
     setSelectedPostPk(null);
     setSelectedMemberPk(null);
+    setSelectedTitle('');
     if (stompClient) {
       stompClient.deactivate();
       setStompClient(null);
@@ -179,7 +183,7 @@ const ChatButton = () => {
           memberPk={selectedMemberPk}
           chatWith={selectedChatWith}
           postPk={selectedPostPk}
-          productTitle=""
+          productTitle={selectedTitle}
           sellerName={selectedNickname}
           stompClient={stompClient}
         />

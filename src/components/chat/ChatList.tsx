@@ -14,12 +14,13 @@ interface ChattingRoomListItem {
   readYn: string;
   postPk: number;
   memberPk: number;
+  title: string;
 }
 
 interface ChatListProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectChat: (roomPk: number, chatWith: number, nickname: string, postPk: number, memberPk: number) => void;
+  onSelectChat: (roomPk: number, chatWith: number, nickname: string, postPk: number, memberPk: number, title: string) => void;
 }
 
 const ChatList = ({ isOpen, onClose, onSelectChat }: ChatListProps) => {
@@ -46,7 +47,7 @@ const ChatList = ({ isOpen, onClose, onSelectChat }: ChatListProps) => {
   };
 
   const handleChatClick = (room: ChattingRoomListItem) => {
-    onSelectChat(room.chattingRoomPk, room.chatWith, room.chatWithNickname, room.postPk, room.memberPk);
+    onSelectChat(room.chattingRoomPk, room.chatWith, room.chatWithNickname, room.postPk, room.memberPk, room.title);
   };
 
   return (
@@ -95,10 +96,15 @@ const ChatList = ({ isOpen, onClose, onSelectChat }: ChatListProps) => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-sm font-medium text-gray-900 truncate">
-                          {room.chatWithNickname}
-                        </h3>
-                        <span className="text-xs text-gray-500">
+                        <div className="flex items-center space-x-2 min-w-0">
+                          <h3 className="text-sm font-medium text-gray-900 truncate">
+                            {room.chatWithNickname}
+                          </h3>
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded truncate">
+                            {room.title}
+                          </span>
+                        </div>
+                        <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
                           {chatService.formatMessageTime(room.messageAt)}
                         </span>
                       </div>

@@ -1,9 +1,12 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send } from 'lucide-react';
+import { X, Send, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { chatService } from '@/services/chatService';
+import { salePostService } from '@/services/salePostService';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { Client } from '@stomp/stompjs';
 
 // 환경변수에서 API URL 가져오기
@@ -27,6 +30,7 @@ interface ProductChatWindowProps {
   productTitle: string;
   sellerName: string;
   stompClient: Client | null;
+  isFromMyPost?: boolean;
 }
 
 const ProductChatWindow = ({ 
@@ -38,13 +42,15 @@ const ProductChatWindow = ({
   postPk,
   productTitle, 
   sellerName,
-  stompClient 
+  stompClient,
+  isFromMyPost = false
 }: ProductChatWindowProps) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { memberInfo } = useAuth();
+  const { toast } = useToast();
 
   // 시간 포맷팅 함수
   const formatMessageTime = (messageAt: string): string => {
@@ -112,6 +118,9 @@ const ProductChatWindow = ({
         setMessages(historyMessages);
       }
       
+      // 메시지 읽음 처리
+      await handleMarkAsRead();
+      
     } catch (error) {
       console.error('채팅방 초기화 오류:', error);
     } finally {
@@ -167,6 +176,24 @@ const ProductChatWindow = ({
     }
   };
 
+  // 판매완료 처리
+  const handleSaleComplete = async () => {
+    try {
+      await salePostService.updateSalePostStatus(postPk, 'C', chatWith);
+      toast({
+        title: '판매완료',
+        description: '판매가 완료되었습니다.',
+      });
+    } catch (error) {
+      console.error('판매완료 처리 오류:', error);
+      toast({
+        title: '판매완료 실패',
+        description: '판매완료 처리에 실패했습니다.',
+        variant: 'destructive'
+      });
+    }
+  };
+
   // 메시지 자동 스크롤
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -218,9 +245,22 @@ const ProductChatWindow = ({
               <h3 className="text-sm font-medium text-gray-900">{sellerName}</h3>
               <p className="text-xs text-gray-500 truncate">{productTitle}</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-green-100">
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              {isFromMyPost && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSaleComplete}
+                  className="text-green-600 hover:bg-green-100 text-xs"
+                >
+                  <Check className="h-4 w-4 mr-1" />
+                  판매완료
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-green-100">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           
           {/* Messages */}

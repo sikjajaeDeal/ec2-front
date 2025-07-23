@@ -1,3 +1,4 @@
+
 import { authService } from './authService';
 import { Client } from '@stomp/stompjs';
 
@@ -32,6 +33,7 @@ interface ChattingRoomListItem {
   readYn: string;
   postPk: number;
   memberPk: number;
+  title: string;
 }
 
 interface UnreadMessageResponse {
