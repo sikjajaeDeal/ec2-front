@@ -128,7 +128,7 @@ const MyPosts = () => {
     setShowChatRoomList(true);
   };
 
-  const handleSelectChatRoom = async (roomPk: number, chatWith: number, postPk: number, memberPk: number, chatWithNickname: string) => {
+  const handleSelectChatRoom = async (roomPk: number, chatWith: number, postPk: number, memberPk: number, chatWithNickname: string, title: string) => {
     try {
       setSelectedRoomPk(roomPk);
       setSelectedChatWith(chatWith);
@@ -442,9 +442,10 @@ const MyPosts = () => {
           memberPk={selectedMemberPk}
           chatWith={selectedChatWith}
           postPk={selectedPostPk}
-          productTitle=""
+          productTitle={posts.find(p => p.postPk === selectedPostPk)?.title || ""}
           sellerName={selectedNickname}
           stompClient={stompClient}
+          isFromMyPost={true}
         />
       )}
     </div>

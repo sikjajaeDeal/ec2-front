@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -158,19 +157,7 @@ const ProductChatWindow = ({
   // 메시지 읽음 처리
   const handleMarkAsRead = async () => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      if (!accessToken) return;
-
-      const response = await fetch(`${API_BASE_URL}/messageRead/${roomPk}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        console.error('메시지 읽음 처리 실패');
-      }
+      await chatService.markMessageAsRead(roomPk);
     } catch (error) {
       console.error('메시지 읽음 처리 오류:', error);
     }
@@ -179,7 +166,7 @@ const ProductChatWindow = ({
   // 판매완료 처리
   const handleSaleComplete = async () => {
     try {
-      await salePostService.updateSalePostStatus(postPk, 'C', chatWith);
+      await chatService.completeSale(postPk, chatWith);
       toast({
         title: '판매완료',
         description: '판매가 완료되었습니다.',

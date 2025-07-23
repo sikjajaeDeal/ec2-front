@@ -222,7 +222,7 @@ export const chatService = {
       throw new Error('로그인이 필요합니다.');
     }
 
-    const response = await fetch(`${API_BASE_URL}/messageRead/${roomPk}`, {
+    const response = await fetch(`${API_BASE_URL}/api/chatting/messageRead/${roomPk}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -231,6 +231,25 @@ export const chatService = {
 
     if (!response.ok) {
       console.error('메시지 읽음 처리 실패');
+    }
+  },
+
+  async completeSale(postPk: number, buyerPk: number): Promise<void> {
+    const accessToken = authService.getAccessToken();
+    
+    if (!accessToken) {
+      throw new Error('로그인이 필요합니다.');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/sale-post/${postPk}/status?status=C&buyerPk=${buyerPk}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('판매완료 처리에 실패했습니다.');
     }
   },
 
