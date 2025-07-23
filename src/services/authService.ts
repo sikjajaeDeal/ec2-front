@@ -25,8 +25,8 @@ interface SocialLoginResponse {
 }
 
 // 환경변수에서 URL 가져오기
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
-const OAUTH2_BASE_URL = import.meta.env.VITE_OAUTH2_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://beanba.store';
+const OAUTH2_BASE_URL = import.meta.env.VITE_OAUTH2_BASE_URL || 'https://beanba.store';
 
 export const authService = {
   async login(loginData: LoginRequest): Promise<LoginResponse> {
