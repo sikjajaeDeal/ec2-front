@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,6 +18,8 @@ const ChatButton = () => {
   const [selectedMemberPk, setSelectedMemberPk] = useState<number | null>(null);
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotification, setShowNotification] = useState(false);
   const { isLoggedIn, memberInfo } = useAuth();
   const { toast } = useToast();
 
@@ -27,15 +28,29 @@ const ChatButton = () => {
     const checkUnreadMessages = async () => {
       if (!isLoggedIn) {
         setHasUnreadMessages(false);
+        setUnreadCount(0);
+        setShowNotification(false);
         return;
       }
 
       try {
         const response = await chatService.checkUnreadMessages();
-        setHasUnreadMessages(response.readYn === 'N');
+        const hasUnread = response.readYn === 'N';
+        setHasUnreadMessages(hasUnread);
+        setUnreadCount(response.unreadCnt);
+        
+        if (hasUnread) {
+          setShowNotification(true);
+          // 1.5초 후 알림 문구 숨기기
+          setTimeout(() => {
+            setShowNotification(false);
+          }, 1500);
+        }
       } catch (error) {
         console.error('읽지 않은 메시지 확인 오류:', error);
         setHasUnreadMessages(false);
+        setUnreadCount(0);
+        setShowNotification(false);
       }
     };
 
@@ -66,6 +81,8 @@ const ChatButton = () => {
     setShowChatList(true);
     // 채팅 리스트를 열 때 읽지 않은 메시지 상태 업데이트
     setHasUnreadMessages(false);
+    setUnreadCount(0);
+    setShowNotification(false);
   };
 
   const handleSelectChat = async (roomPk: number, chatWith: number, nickname: string, postPk: number, memberPk: number) => {
@@ -123,20 +140,28 @@ const ChatButton = () => {
   return (
     <>
       {/* Unread Message Notification */}
-      {hasUnreadMessages && (
+      {showNotification && hasUnreadMessages && (
         <div className="fixed bottom-6 right-24 bg-red-500 text-white px-3 py-2 rounded-lg shadow-lg text-sm z-30 whitespace-nowrap">
           안 읽은 메시지가 있습니다.
         </div>
       )}
 
       {/* Chat Button */}
-      <Button
-        onClick={handleChatButtonClick}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 shadow-lg z-30"
-        size="icon"
-      >
-        <MessageCircle className="h-6 w-6 text-white" />
-      </Button>
+      <div className="fixed bottom-6 right-6 z-30">
+        <Button
+          onClick={handleChatButtonClick}
+          className="relative w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 shadow-lg"
+          size="icon"
+        >
+          <MessageCircle className="h-6 w-6 text-white" />
+          {/* Unread Count Badge */}
+          {unreadCount > 0 && (
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center px-1">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </div>
+          )}
+        </Button>
+      </div>
 
       {/* Chat List */}
       <ChatList
