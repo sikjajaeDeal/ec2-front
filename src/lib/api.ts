@@ -16,3 +16,7 @@ export const likeProduct = async (postPk: number) => {
 export const unlikeProduct = async (postPk: number) => {
   return likeService.unlikeProduct(postPk);
 };
+
+export const updateProduct = async (postPk: number, updateData: any, newImages?: File[]) => {
+  return salePostService.updateSalePost(postPk, updateData, newImages);
+};

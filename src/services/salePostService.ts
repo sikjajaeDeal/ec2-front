@@ -81,6 +81,16 @@ export const getStateColor = (state: string) => {
   }
 };
 
+export interface SalePostUpdateRequest {
+  categoryPk: number;
+  title: string;
+  content: string;
+  hopePrice: number;
+  latitude: number;
+  longitude: number;
+  imageUrls: string[];
+}
+
 export const salePostService = {
   // 인기상품 조회 (좋아요 많은 순)
   getTopViewPosts: async (): Promise<SalePost[]> => {
@@ -131,6 +141,43 @@ export const salePostService = {
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(errorText || '상품 등록에 실패했습니다.');
+    }
+  },
+
+  // 상품 수정
+  updateSalePost: async (postPk: number, updateRequest: SalePostUpdateRequest, newImages?: File[]): Promise<void> => {
+    const token = authService.getAccessToken();
+    
+    if (!token) {
+      throw new Error('로그인이 필요합니다.');
+    }
+
+    const formData = new FormData();
+    
+    // updateRequest를 JSON 문자열로 변환하여 추가
+    const jsonBlob = new Blob([JSON.stringify(updateRequest)], {
+      type: 'application/json'
+    });
+    formData.append('salePostRequest', jsonBlob);
+    
+    // 새 이미지 파일들 추가
+    if (newImages && newImages.length > 0) {
+      newImages.forEach((image) => {
+        formData.append('salePostImages', image);
+      });
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/sale-post/${postPk}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || '상품 수정에 실패했습니다.');
     }
   },
 

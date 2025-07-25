@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash2, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -49,6 +49,7 @@ const MyPosts = () => {
   
   const { toast } = useToast();
   const { memberInfo } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!memberInfo) {
@@ -253,6 +254,10 @@ const MyPosts = () => {
 
   const posts = postsData?.content || [];
 
+  const handleEditPost = (postPk: number) => {
+    navigate(`/edit-post/${postPk}`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-300 to-green-200">
       <div className="container mx-auto p-4">
@@ -306,12 +311,7 @@ const MyPosts = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => {
-                            toast({
-                              title: "알림",
-                              description: "수정 기능은 곧 구현될 예정입니다.",
-                            });
-                          }}
+                          onClick={() => handleEditPost(post.postPk)}
                         >
                           수정
                         </Button>
