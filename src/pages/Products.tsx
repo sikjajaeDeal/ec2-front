@@ -12,6 +12,7 @@ import { likeService } from '@/services/likeService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { convertCoordsToAddress, loadKakaoMapScript } from '@/utils/addressUtils';
+import ReportButton from '@/components/ReportButton';
 import {
   Pagination,
   PaginationContent,
@@ -255,15 +256,18 @@ const Products = () => {
                           e.currentTarget.src = '/placeholder.svg';
                         }}
                       />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => handleLike(product.postPk, e)}
-                        disabled={likingPosts.has(product.postPk)}
-                        className="absolute top-2 right-2 p-2 bg-white/80 hover:bg-white"
-                      >
-                        <Heart className={`h-4 w-4 ${product.salePostLiked ? 'fill-red-500 text-red-500' : ''}`} />
-                      </Button>
+                      <div className="absolute top-2 right-2 flex items-center space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => handleLike(product.postPk, e)}
+                          disabled={likingPosts.has(product.postPk)}
+                          className="p-2 bg-white/80 hover:bg-white"
+                        >
+                          <Heart className={`h-4 w-4 ${product.salePostLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                        </Button>
+                        <ReportButton postId={product.postPk} className="bg-white/80 hover:bg-white" />
+                      </div>
                       <Badge 
                         className={`absolute top-2 left-2 ${getStateColor(product.state)}`}
                       >

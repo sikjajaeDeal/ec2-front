@@ -5,6 +5,7 @@ import { MapPin, User, Package, Heart, Eye, Calendar, CheckCircle2, ChevronLeft,
 import KakaoMap from '@/components/KakaoMap';
 import Header from '@/components/Header';
 import ProductChatWindow from '@/components/chat/ProductChatWindow';
+import ReportButton from '@/components/ReportButton';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProductDetail, likeProduct, unlikeProduct } from '@/lib/api';
 import { getStateText, getStateColor } from '@/services/salePostService';
@@ -277,7 +278,10 @@ const ProductDetail = () => {
 
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.title}</h1>
+              <div className="flex items-center justify-between mb-4">
+                <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
+                <ReportButton postId={product.postPk} />
+              </div>
               
               <div className="flex items-center space-x-4 mb-4 flex-wrap gap-2">
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(product.categoryName)}`}>

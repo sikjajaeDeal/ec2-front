@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, MapPin, Package, Heart } from 'lucide-react';
 import { salePostService, getStateText, getStateColor } from '@/services/salePostService';
+import ReportButton from '@/components/ReportButton';
 
 const FeaturedProducts = () => {
   const navigate = useNavigate();
@@ -92,9 +93,12 @@ const FeaturedProducts = () => {
                 <Badge className={`absolute top-3 left-3 ${getStateColor(product.state)}`}>
                   {getStateText(product.state)}
                 </Badge>
-                <div className="absolute top-3 right-3 flex items-center space-x-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
-                  <Heart className="h-4 w-4 text-red-500" />
-                  <span className="text-sm font-medium">{product.likeCount}</span>
+                <div className="absolute top-3 right-3 flex items-center space-x-1">
+                  <div className="flex items-center space-x-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
+                    <Heart className="h-4 w-4 text-red-500" />
+                    <span className="text-sm font-medium">{product.likeCount}</span>
+                  </div>
+                  <ReportButton postId={product.postPk} className="bg-white/90 backdrop-blur-sm rounded-full" />
                 </div>
               </div>
               
