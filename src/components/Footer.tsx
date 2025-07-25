@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Info */}
           <div className="col-span-1">
             <div className="text-2xl font-bold text-green-400 mb-4">콩바구니</div>
@@ -22,17 +22,6 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><a href="/products" className="text-gray-300 hover:text-white transition-colors">상품 보기</a></li>
               <li><a href="/sell" className="text-gray-300 hover:text-white transition-colors">판매하기</a></li>
-            </ul>
-          </div>
-
-          {/* Categories */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">카테고리</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">곡물/잡곡</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">채소류</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">축산물</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">수산물</a></li>
             </ul>
           </div>
 

@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { authService } from '@/services/authService';
 import KakaoMap from '@/components/KakaoMap';
+import LocationUpdateButton from '@/components/LocationUpdateButton';
 
 const Sell = () => {
   const navigate = useNavigate();
@@ -74,6 +75,10 @@ const Sell = () => {
 
   const handleAddressChange = (address: string) => {
     setCurrentAddress(address);
+  };
+
+  const handleLocationUpdate = (latitude: number, longitude: number) => {
+    setUserLocation({ latitude, longitude });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -239,7 +244,10 @@ const Sell = () => {
                       className="w-full h-full"
                     />
                   </div>
-                  <p className="text-sm text-gray-500 mt-2">회원가입 시 등록한 위치를 기반으로 지도가 표시됩니다.</p>
+                  <div className="mt-4 flex justify-between items-center">
+                    <p className="text-sm text-gray-500">회원가입 시 등록한 위치를 기반으로 지도가 표시됩니다.</p>
+                    <LocationUpdateButton onLocationUpdate={handleLocationUpdate} />
+                  </div>
                 </div>
 
                 {/* Image Upload */}

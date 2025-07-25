@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Search, Menu, User, Heart, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -218,7 +219,7 @@ const Header = () => {
                     onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
                     className="pl-14 pr-4 py-6 w-full border-green-200 focus:border-green-400 text-xl placeholder:text-gray-400 rounded-xl"
                   />
-                  <Search className="absolute left-4 top-6 h-6 w-6 text-gray-400" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" />
 
                   {/* Search Results Dropdown */}
                   {searchQuery.length > 0 && (

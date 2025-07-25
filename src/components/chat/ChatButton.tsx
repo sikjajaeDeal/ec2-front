@@ -26,36 +26,36 @@ const ChatButton = () => {
   const { toast } = useToast();
 
   // 읽지 않은 메시지 확인
+  const checkUnreadMessages = async () => {
+    if (!isLoggedIn) {
+      setHasUnreadMessages(false);
+      setUnreadCount(0);
+      setShowNotification(false);
+      return;
+    }
+
+    try {
+      const response = await chatService.checkUnreadMessages();
+      const hasUnread = response.readYn === 'N';
+      setHasUnreadMessages(hasUnread);
+      setUnreadCount(response.unreadCnt);
+      
+      if (hasUnread) {
+        setShowNotification(true);
+        // 1.5초 후 알림 문구 숨기기
+        setTimeout(() => {
+          setShowNotification(false);
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('읽지 않은 메시지 확인 오류:', error);
+      setHasUnreadMessages(false);
+      setUnreadCount(0);
+      setShowNotification(false);
+    }
+  };
+
   useEffect(() => {
-    const checkUnreadMessages = async () => {
-      if (!isLoggedIn) {
-        setHasUnreadMessages(false);
-        setUnreadCount(0);
-        setShowNotification(false);
-        return;
-      }
-
-      try {
-        const response = await chatService.checkUnreadMessages();
-        const hasUnread = response.readYn === 'N';
-        setHasUnreadMessages(hasUnread);
-        setUnreadCount(response.unreadCnt);
-        
-        if (hasUnread) {
-          setShowNotification(true);
-          // 1.5초 후 알림 문구 숨기기
-          setTimeout(() => {
-            setShowNotification(false);
-          }, 1500);
-        }
-      } catch (error) {
-        console.error('읽지 않은 메시지 확인 오류:', error);
-        setHasUnreadMessages(false);
-        setUnreadCount(0);
-        setShowNotification(false);
-      }
-    };
-
     checkUnreadMessages();
     
     // 로그인 상태일 때만 주기적으로 확인 (30초마다)
@@ -126,7 +126,7 @@ const ChatButton = () => {
     }
   };
 
-  const handleCloseAll = () => {
+  const handleCloseAll = async () => {
     setShowChatList(false);
     setShowChatWindow(false);
     setSelectedRoomPk(null);
@@ -139,6 +139,9 @@ const ChatButton = () => {
       stompClient.deactivate();
       setStompClient(null);
     }
+    
+    // 채팅방 닫을 때 읽지 않은 메시지 상태 업데이트
+    await checkUnreadMessages();
   };
 
   return (
