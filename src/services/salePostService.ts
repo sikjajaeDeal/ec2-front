@@ -49,12 +49,12 @@ export interface SalePostsResponse {
 }
 
 export interface LocationSearchRequest {
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   minPrice: number;
   maxPrice: number;
   keyword: string;
-  distance: number;
+  distance: number | null;
   categoryPk: number | null;
   page: number;
   size: number;
@@ -303,7 +303,7 @@ export const salePostService = {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(errorText || '위치 기반 상품 검색에 실패했습니다.');
+      throw new Error(errorText || '검색에 실패했습니다.');
     }
 
     return response.json();
