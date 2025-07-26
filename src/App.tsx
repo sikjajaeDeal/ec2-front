@@ -13,6 +13,7 @@ import Profile from './pages/Profile';
 import ProfileSettings from './pages/ProfileSettings';
 import NotFound from './pages/NotFound';
 import EditPost from './pages/EditPost';
+import SocialCallback from './pages/SocialCallback';
 import { AuthProvider } from './contexts/AuthContext';
 import { Toaster } from "@/components/ui/toaster"
 
@@ -35,6 +36,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile/settings" element={<ProfileSettings />} />
               <Route path="/edit-post/:postPk" element={<EditPost />} />
+              <Route path="/oauth2/callback" element={<SocialCallback />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
