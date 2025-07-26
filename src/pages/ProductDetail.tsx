@@ -280,7 +280,7 @@ const ProductDetail = () => {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
-                <ReportButton postId={product.postPk} />
+                <ReportButton postId={product.postPk} reporteePk={product.sellerPk} />
               </div>
               
               <div className="flex items-center space-x-4 mb-4 flex-wrap gap-2">

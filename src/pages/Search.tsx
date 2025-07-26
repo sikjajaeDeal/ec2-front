@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search as SearchIcon, Heart, Eye, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -322,7 +321,7 @@ const Search = () => {
                         >
                           <Heart className={`h-4 w-4 ${product.salePostLiked ? 'fill-red-500 text-red-500' : ''}`} />
                         </Button>
-                        <ReportButton postId={product.postPk} className="bg-white/80 hover:bg-white" />
+                        <ReportButton postId={product.postPk} reporteePk={product.sellerPk} className="bg-white/80 hover:bg-white" />
                       </div>
                       <Badge 
                         className={`absolute top-2 left-2 ${getStateColor(product.state)}`}
