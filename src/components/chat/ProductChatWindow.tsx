@@ -7,6 +7,7 @@ import { salePostService } from '@/services/salePostService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Client } from '@stomp/stompjs';
+import ChatReportButton from './ChatReportButton';
 
 // 환경변수에서 API URL 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://beanba.store';
@@ -244,6 +245,12 @@ const ProductChatWindow = ({
                   판매완료
                 </Button>
               )}
+              <ChatReportButton
+                postPk={postPk}
+                reporteePk={chatWith}
+                targetName={sellerName}
+                className="hover:bg-green-100"
+              />
               <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-green-100">
                 <X className="h-4 w-4" />
               </Button>

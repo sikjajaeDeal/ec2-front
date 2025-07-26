@@ -2,20 +2,20 @@
 import React, { useState } from 'react';
 import { Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import ReportModal from './ReportModal';
+import ReportModal from '../ReportModal';
 
-interface ReportButtonProps {
-  postId: number;
-  reporteePk: number;
-  targetName?: string;
+interface ChatReportButtonProps {
+  postPk: number;
+  reporteePk: number; // chatWith 값
+  targetName?: string; // chatWithNickname
   className?: string;
 }
 
-const ReportButton = ({ postId, reporteePk, targetName, className = '' }: ReportButtonProps) => {
+const ChatReportButton = ({ postPk, reporteePk, targetName, className = '' }: ChatReportButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleReport = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 이벤트 버블링 방지
+    e.stopPropagation();
     setIsModalOpen(true);
   };
 
@@ -25,7 +25,7 @@ const ReportButton = ({ postId, reporteePk, targetName, className = '' }: Report
         variant="ghost"
         size="sm"
         onClick={handleReport}
-        className={`text-gray-500 hover:text-red-500 p-1 h-auto ${className}`}
+        className={`text-gray-500 hover:text-red-500 ${className}`}
         title="신고하기"
       >
         <Flag className="h-4 w-4" />
@@ -34,7 +34,7 @@ const ReportButton = ({ postId, reporteePk, targetName, className = '' }: Report
       <ReportModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        postPk={postId}
+        postPk={postPk}
         reporteePk={reporteePk}
         targetName={targetName}
       />
@@ -42,4 +42,4 @@ const ReportButton = ({ postId, reporteePk, targetName, className = '' }: Report
   );
 };
 
-export default ReportButton;
+export default ChatReportButton;

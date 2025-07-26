@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -98,7 +97,12 @@ const FeaturedProducts = () => {
                     <Heart className="h-4 w-4 text-red-500" />
                     <span className="text-sm font-medium">{product.likeCount}</span>
                   </div>
-                  <ReportButton postId={product.postPk} className="bg-white/90 backdrop-blur-sm rounded-full" />
+                  <ReportButton 
+                    postId={product.postPk} 
+                    reporteePk={product.sellerPk}
+                    targetName={product.title}
+                    className="bg-white/90 backdrop-blur-sm rounded-full" 
+                  />
                 </div>
               </div>
               
