@@ -25,6 +25,15 @@ interface SocialLoginResponse {
   memberResponse: MemberResponse;
 }
 
+interface SignupRequest {
+  memberId: string;
+  nickname: string;
+  email: string;
+  password: string;
+  latitude: string;
+  longitude: string;
+}
+
 // 환경변수에서 URL 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://beanba.store';
 const OAUTH2_BASE_URL = import.meta.env.VITE_OAUTH2_BASE_URL || 'https://beanba.store';
@@ -108,6 +117,46 @@ export const authService = {
 
     if (!response.ok) {
       throw new Error('이메일 전송에 실패했습니다.');
+    }
+
+    return;
+  },
+
+  async verifyEmailCode(email: string, code: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/api/auth/signup/verify?email=${encodeURIComponent(email)}&code=${code}`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      if (errorText.includes('잘못된 인증코드')) {
+        throw new Error('인증코드가 올바르지 않습니다.');
+      } else if (errorText.includes('만료된 인증코드')) {
+        throw new Error('인증코드가 만료되었습니다. 새로운 코드를 요청해주세요.');
+      }
+      throw new Error('인증에 실패했습니다.');
+    }
+
+    return;
+  },
+
+  async signup(signupData: SignupRequest): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(signupData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      if (errorText.includes('이미 사용중인 아이디')) {
+        throw new Error('이미 사용중인 아이디입니다.');
+      } else if (errorText.includes('이미 가입된 이메일')) {
+        throw new Error('이미 가입된 이메일입니다.');
+      }
+      throw new Error('회원가입에 실패했습니다.');
     }
 
     return;

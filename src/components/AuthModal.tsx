@@ -1,22 +1,27 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SocialLoginButtons } from './auth/SocialLoginButtons';
 import LocationDisplay from './auth/LocationDisplay';
 import AuthForm from './auth/AuthForm';
 import EmailVerification from './auth/EmailVerification';
+import EmailCodeVerification from './auth/EmailCodeVerification';
+import SignupForm from './auth/SignupForm';
 import FindIdForm from './auth/FindIdForm';
 import FindPasswordForm from './auth/FindPasswordForm';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-type AuthStep = 'login' | 'email-verification' | 'signup' | 'find-id' | 'find-password';
+type AuthStep = 'login' | 'email-verification' | 'code-verification' | 'signup' | 'find-id' | 'find-password';
 
 const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const [currentStep, setCurrentStep] = useState<AuthStep>('login');
   const [verifiedEmail, setVerifiedEmail] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (formData: any) => {
     console.log('Form submitted:', formData);
@@ -28,9 +33,20 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     onClose();
   };
 
-  const handleEmailVerified = (email: string) => {
+  const handleEmailSent = (email: string) => {
     setVerifiedEmail(email);
+    setCurrentStep('code-verification');
+  };
+
+  const handleEmailVerified = () => {
     setCurrentStep('signup');
+  };
+
+  const handleSignupSuccess = () => {
+    setCurrentStep('login');
+    setVerifiedEmail('');
+    onClose();
+    navigate('/');
   };
 
   const handleToggleMode = () => {
@@ -42,10 +58,15 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
   };
 
+  const handleBackToEmailInput = () => {
+    setCurrentStep('email-verification');
+    setVerifiedEmail('');
+  };
+
   // 모달이 닫힐 때 상태 초기화 - 깜빡임 방지를 위해 약간의 지연 추가
   const handleClose = () => {
     // 현재 단계가 이메일 인증이면 즉시 로그인으로 변경하지 않고 바로 닫기
-    if (currentStep !== 'email-verification') {
+    if (currentStep !== 'email-verification' && currentStep !== 'code-verification') {
       setCurrentStep('login');
       setVerifiedEmail('');
     }
@@ -64,6 +85,8 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         return '로그인';
       case 'email-verification':
         return '이메일 인증';
+      case 'code-verification':
+        return '계정 인증';
       case 'signup':
         return '회원가입';
       case 'find-id':
@@ -92,7 +115,18 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           {/* Left Side - Form */}
           <div className={`space-y-6 ${currentStep !== 'signup' ? 'w-full max-w-sm' : 'flex-1'}`}>
             {currentStep === 'email-verification' ? (
-              <EmailVerification onVerified={handleEmailVerified} />
+              <EmailVerification onEmailSent={handleEmailSent} />
+            ) : currentStep === 'code-verification' ? (
+              <EmailCodeVerification 
+                email={verifiedEmail}
+                onVerified={handleEmailVerified}
+                onBack={handleBackToEmailInput}
+              />
+            ) : currentStep === 'signup' ? (
+              <SignupForm
+                email={verifiedEmail}
+                onSuccess={handleSignupSuccess}
+              />
             ) : currentStep === 'find-id' ? (
               <FindIdForm onBack={() => setCurrentStep('login')} />
             ) : currentStep === 'find-password' ? (
@@ -121,7 +155,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               </>
             )}
 
-            {currentStep !== 'email-verification' && currentStep !== 'find-id' && currentStep !== 'find-password' && (
+            {(currentStep === 'login' || currentStep === 'signup') && (
               <div className="text-center">
                 <button
                   type="button"
