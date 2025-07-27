@@ -243,7 +243,40 @@ export const authService = {
     return;
   },
 
-  // OAuth2 URL 생성 함수들
+  async verifyPasswordCode(memberId: string, email: string, code: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/api/member/findPassword/verify?memberId=${memberId}&email=${email}&code=${code}`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      if (errorText.includes('잘못된 인증코드')) {
+        throw new Error('인증코드가 올바르지 않습니다.');
+      } else if (errorText.includes('만료된 인증코드')) {
+        throw new Error('인증코드가 만료되었습니다. 새로운 코드를 요청해주세요.');
+      }
+      throw new Error('인증에 실패했습니다.');
+    }
+
+    return;
+  },
+
+  async changePassword(password: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/api/member/changePwd`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ password }),
+    });
+
+    if (!response.ok) {
+      throw new Error('비밀번호 변경에 실패했습니다.');
+    }
+
+    return;
+  },
+
   getKakaoLoginUrl(): string {
     return `${OAUTH2_BASE_URL}/oauth2/authorization/kakao`;
   },

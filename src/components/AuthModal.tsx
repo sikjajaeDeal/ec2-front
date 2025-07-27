@@ -9,6 +9,8 @@ import EmailCodeVerification from './auth/EmailCodeVerification';
 import SignupForm from './auth/SignupForm';
 import FindIdForm from './auth/FindIdForm';
 import FindPasswordForm from './auth/FindPasswordForm';
+import PasswordCodeVerification from './auth/PasswordCodeVerification';
+import PasswordChangeForm from './auth/PasswordChangeForm';
 import { useNavigate } from 'react-router-dom';
 
 interface AuthModalProps {
@@ -16,11 +18,15 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
-type AuthStep = 'login' | 'email-verification' | 'code-verification' | 'signup' | 'find-id' | 'find-password';
+type AuthStep = 'login' | 'email-verification' | 'code-verification' | 'signup' | 'find-id' | 'find-password' | 'password-code-verification' | 'password-change';
 
 const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const [currentStep, setCurrentStep] = useState<AuthStep>('login');
   const [verifiedEmail, setVerifiedEmail] = useState('');
+  const [passwordResetData, setPasswordResetData] = useState({
+    memberId: '',
+    email: ''
+  });
   const navigate = useNavigate();
 
   const handleSubmit = (formData: any) => {
@@ -49,6 +55,21 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     navigate('/');
   };
 
+  const handlePasswordCodeSent = (memberId: string, email: string) => {
+    setPasswordResetData({ memberId, email });
+    setCurrentStep('password-code-verification');
+  };
+
+  const handlePasswordCodeVerified = () => {
+    setCurrentStep('password-change');
+  };
+
+  const handlePasswordChanged = () => {
+    setCurrentStep('login');
+    setPasswordResetData({ memberId: '', email: '' });
+    onClose();
+  };
+
   const handleToggleMode = () => {
     if (currentStep === 'login') {
       setCurrentStep('email-verification');
@@ -63,19 +84,23 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     setVerifiedEmail('');
   };
 
-  // 모달이 닫힐 때 상태 초기화 - 깜빡임 방지를 위해 약간의 지연 추가
+  const handleBackToPasswordInput = () => {
+    setCurrentStep('find-password');
+  };
+
+  // 모달이 닫힐 때 상태 초기화
   const handleClose = () => {
-    // 현재 단계가 이메일 인증이면 즉시 로그인으로 변경하지 않고 바로 닫기
-    if (currentStep !== 'email-verification' && currentStep !== 'code-verification') {
+    if (currentStep !== 'email-verification' && currentStep !== 'code-verification' && currentStep !== 'password-code-verification') {
       setCurrentStep('login');
       setVerifiedEmail('');
+      setPasswordResetData({ memberId: '', email: '' });
     }
     onClose();
     
-    // 모달이 완전히 닫힌 후 상태 초기화
     setTimeout(() => {
       setCurrentStep('login');
       setVerifiedEmail('');
+      setPasswordResetData({ memberId: '', email: '' });
     }, 200);
   };
 
@@ -93,6 +118,10 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         return '아이디 찾기';
       case 'find-password':
         return '비밀번호 찾기';
+      case 'password-code-verification':
+        return '비밀번호 찾기 인증';
+      case 'password-change':
+        return '비밀번호 변경';
       default:
         return '로그인';
     }
@@ -130,7 +159,19 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             ) : currentStep === 'find-id' ? (
               <FindIdForm onBack={() => setCurrentStep('login')} />
             ) : currentStep === 'find-password' ? (
-              <FindPasswordForm onBack={() => setCurrentStep('login')} />
+              <FindPasswordForm 
+                onBack={() => setCurrentStep('login')}
+                onCodeSent={handlePasswordCodeSent}
+              />
+            ) : currentStep === 'password-code-verification' ? (
+              <PasswordCodeVerification
+                memberId={passwordResetData.memberId}
+                email={passwordResetData.email}
+                onVerified={handlePasswordCodeVerified}
+                onBack={handleBackToPasswordInput}
+              />
+            ) : currentStep === 'password-change' ? (
+              <PasswordChangeForm onSuccess={handlePasswordChanged} />
             ) : (
               <>
                 <SocialLoginButtons />
